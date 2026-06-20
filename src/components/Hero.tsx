@@ -43,13 +43,13 @@ export function Hero() {
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href="#shop"
+              href="/shop"
               className="inline-flex items-center justify-center border border-espresso bg-espresso px-6 py-3 text-sm font-semibold tracking-wide text-ivory uppercase transition-colors hover:bg-espresso/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne motion-reduce:transition-none"
             >
               Explore the Collection
             </Link>
             <Link
-              href="#scent-finder"
+              href="/scent-finder"
               className="inline-flex items-center justify-center border border-espresso/20 bg-transparent px-6 py-3 text-sm font-semibold tracking-wide text-espresso uppercase transition-colors hover:border-champagne hover:text-espresso focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne motion-reduce:transition-none"
             >
               Find My Scent

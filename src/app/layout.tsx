@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
-import { Disclaimer } from "@/components/Disclaimer";
-import { Header } from "@/components/Header";
+import { CartProvider } from "@/components/cart/CartProvider";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { SkipLink } from "@/components/ui/SkipLink";
 import { bodyFont, displayFont } from "@/lib/fonts";
+import { baseMetadata, buildWebsiteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Just My Scent — Unofficial Redesign Concept",
-  description:
-    "A premium fragrance-oil ecommerce concept exploring editorial luxury and personal scent discovery.",
-  icons: {
-    icon: "/icon.svg",
-  },
-};
+export const metadata: Metadata = baseMetadata;
 
 export default function RootLayout({
   children,
@@ -22,10 +18,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
       <body className="font-body antialiased">
-        <AnnouncementBar />
-        <Header />
-        <main>{children}</main>
-        <Disclaimer />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteJsonLd()) }}
+        />
+        <CartProvider>
+          <SkipLink />
+          <AnnouncementBar />
+          <Header />
+          <main id="main-content">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
