@@ -1,10 +1,10 @@
-import { demoProvider } from "@/lib/commerce/demo/provider";
+import { snapshotProvider } from "@/lib/commerce/snapshot/provider";
 import { shopifyProvider } from "@/lib/commerce/shopify/provider";
 import type { CommerceProvider } from "@/lib/commerce/types";
 import { getCommerceMode, isShopifyModeEnabled } from "@/lib/env";
 
 export function getCommerceProvider(): CommerceProvider {
-  return isShopifyModeEnabled() ? shopifyProvider : demoProvider;
+  return isShopifyModeEnabled() ? shopifyProvider : snapshotProvider;
 }
 
 export { getCommerceMode, isShopifyModeEnabled };

@@ -3,10 +3,9 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
-  getAllDemoNotes,
-  getDemoAudiences,
-  getDemoScentFamilies,
-} from "@/lib/commerce/demo/filters";
+  getSnapshotNotes,
+  getSnapshotScentFamilies,
+} from "@/lib/commerce/snapshot/filters";
 import type { SortOption } from "@/lib/commerce/types";
 import { buildShopQueryString, type ShopSearchParams } from "@/lib/shop/filters";
 
@@ -26,9 +25,9 @@ function FilterPanel({
   onNavigate?: () => void;
 }) {
   const router = useRouter();
-  const audiences = getDemoAudiences();
-  const scentFamilies = getDemoScentFamilies();
-  const notes = getAllDemoNotes().slice(0, 8);
+  const audiences = ["women", "men", "unisex"] as const;
+  const scentFamilies = getSnapshotScentFamilies().slice(0, 12);
+  const notes = getSnapshotNotes().slice(0, 12);
 
   const update = (updates: Partial<ShopSearchParams>) => {
     router.push(`/shop?${buildShopQueryString(searchParams, updates)}`);

@@ -160,9 +160,9 @@ export function CartDrawer() {
             <span className="text-espresso/70">Subtotal</span>
             <span className="font-semibold text-espresso">{formatMoney(cart.subtotal)}</span>
           </div>
-          {mode === "demo" ? (
+          {mode === "snapshot" ? (
             <p className="mb-4 text-xs leading-relaxed text-espresso/60">
-              Demo mode: checkout is disabled until Shopify credentials are connected.
+              Snapshot mode: checkout is disabled until Shopify credentials are connected.
             </p>
           ) : null}
           <button
@@ -175,7 +175,7 @@ export function CartDrawer() {
             }
             className="w-full border border-espresso bg-espresso px-5 py-3 text-sm font-semibold tracking-[0.14em] text-ivory uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {mode === "demo" ? "Checkout Unavailable in Demo" : "Checkout"}
+            {mode === "snapshot" ? "Checkout Unavailable in Snapshot Mode" : "Checkout"}
           </button>
         </div>
       </aside>

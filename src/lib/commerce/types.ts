@@ -67,6 +67,7 @@ export interface Product {
   id: string;
   handle: string;
   title: string;
+  sourceTitle?: string;
   description: string;
   descriptionHtml?: string;
   shortDescription?: string;
@@ -75,6 +76,7 @@ export interface Product {
   tags: string[];
   featuredImage?: ProductImage;
   images: ProductImage[];
+  localImagePath?: string;
   priceRange: { min: Money; max: Money };
   compareAtPriceRange?: { min: Money; max: Money };
   availableForSale: boolean;
@@ -83,13 +85,20 @@ export interface Product {
   collections: ProductCollectionRef[];
   seo?: ProductSeo;
   audience: Audience;
-  scentFamily: ScentFamily;
+  scentFamily: string;
+  scentFamilyRaw?: string;
   topNotes: string[];
   heartNotes: string[];
   baseNotes: string[];
   mood: string;
   occasion: string;
   fragranceStrength: string;
+  referenceFragrance?: string;
+  referenceBrand?: string;
+  quizEligible?: boolean;
+  metadataCoverage?: "complete" | "limited" | "missing";
+  publicUrl?: string;
+  sourceUrl?: string;
   featuredMessage?: string;
   featured?: boolean;
   isNew?: boolean;
@@ -118,7 +127,7 @@ export interface Shop {
 export interface ProductFilters {
   query?: string;
   audience?: Audience[];
-  scentFamily?: ScentFamily[];
+  scentFamily?: string[];
   notes?: string[];
   availableOnly?: boolean;
   minPrice?: number;

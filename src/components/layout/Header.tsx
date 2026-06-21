@@ -9,9 +9,9 @@ import { CartIcon, CloseIcon, MenuIcon, SearchIcon } from "@/components/icons";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
-  { label: "Women", href: "/collections/women" },
-  { label: "Men", href: "/collections/men" },
-  { label: "Unisex", href: "/collections/unisex" },
+  { label: "Women", href: "/collections/womens-fragrance" },
+  { label: "Men", href: "/collections/mens-fragrance" },
+  { label: "Unisex", href: "/collections/frontpage" },
   { label: "Scent Finder", href: "/scent-finder" },
   { label: "About", href: "/about" },
 ];

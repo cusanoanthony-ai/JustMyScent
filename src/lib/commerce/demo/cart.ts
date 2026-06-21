@@ -8,6 +8,19 @@ import type {
   Product,
 } from "@/lib/commerce/types";
 import { demoProductMap, demoProducts } from "@/lib/commerce/demo/products";
+import { snapshotProducts } from "@/lib/commerce/snapshot/catalog-data";
+
+function findProductByVariantId(merchandiseId: string): Product | undefined {
+  for (const product of snapshotProducts) {
+    if (product.variants.some((variant) => variant.id === merchandiseId)) {
+      return product;
+    }
+  }
+
+  return demoProducts.find((product) =>
+    product.variants.some((variant) => variant.id === merchandiseId),
+  );
+}
 
 const CURRENCY = "USD";
 
@@ -61,9 +74,7 @@ function normalizeCart(cart: Cart): Cart {
 export function createDemoCart(lines: CartLineInput[] = [], cartId = "demo-cart"): Cart {
   const cart = createEmptyCart(cartId);
   for (const line of lines) {
-    const product = demoProducts.find((item) =>
-      item.variants.some((variant) => variant.id === line.merchandiseId),
-    );
+    const product = findProductByVariantId(line.merchandiseId);
     if (!product) {
       continue;
     }
@@ -86,11 +97,9 @@ export function addDemoCartLines(
   const nextLines = [...cart.lines];
 
   for (const input of lines) {
-    const product = demoProducts.find((item) =>
-      item.variants.some((variant) => variant.id === input.merchandiseId),
-    );
+    const product = findProductByVariantId(input.merchandiseId);
     if (!product) {
-      return { error: "Selected variant is unavailable in demo mode." };
+      return { error: "Selected variant is unavailable in snapshot mode." };
     }
 
     const variant = product.variants.find((item) => item.id === input.merchandiseId);

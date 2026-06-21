@@ -8,9 +8,9 @@ import type {
   ProductImage,
   ProductListOptions,
   ProductVariant,
-  ScentFamily,
   SortOption,
 } from "@/lib/commerce/types";
+import { mergeScentMetadataFromLocal } from "@/lib/scent-metadata/merge";
 
 interface ShopifyMoney {
   amount: string;
@@ -98,25 +98,6 @@ interface ShopifyCart {
   };
 }
 
-const SCENT_FAMILY_MAP: Record<string, ScentFamily> = {
-  "sweet-gourmand": "Sweet & Gourmand",
-  gourmand: "Sweet & Gourmand",
-  sweet: "Sweet & Gourmand",
-  "fresh-clean": "Fresh & Clean",
-  fresh: "Fresh & Clean",
-  clean: "Fresh & Clean",
-  floral: "Floral",
-  "warm-sensual": "Warm & Sensual",
-  warm: "Warm & Sensual",
-  sensual: "Warm & Sensual",
-  "woody-earthy": "Woody & Earthy",
-  woody: "Woody & Earthy",
-  earthy: "Woody & Earthy",
-  "bold-refined": "Bold & Refined",
-  bold: "Bold & Refined",
-  refined: "Bold & Refined",
-};
-
 function mapMoney(money: ShopifyMoney): Money {
   return { amount: money.amount, currencyCode: money.currencyCode };
 }
@@ -176,13 +157,10 @@ function normalizeAudience(value?: string, tags: string[] = []): Audience {
   return "unisex";
 }
 
-function normalizeScentFamily(value?: string, tags: string[] = []): ScentFamily {
-  const raw = (value ?? getTagValue(tags, "scent") ?? "fresh-clean")
-    .toLowerCase()
-    .replace(/&/g, "")
-    .replace(/\s+/g, "-");
-
-  return SCENT_FAMILY_MAP[raw] ?? "Fresh & Clean";
+function normalizeScentFamily(value?: string, tags: string[] = []): string {
+  const raw = (value ?? getTagValue(tags, "scent") ?? "").trim();
+  if (!raw) return "Uncategorized";
+  return raw;
 }
 
 function normalizeNotes(metafieldValue?: string, tags: string[] = []): string[] {
@@ -218,10 +196,11 @@ export function mapShopifyProduct(product: ShopifyProduct): Product {
   const heartNotes = normalizeNotes(getMetafieldValue(metafields, "heart_notes"), tags);
   const baseNotes = normalizeNotes(getMetafieldValue(metafields, "base_notes"), tags);
 
-  return {
+  const mapped = {
     id: product.id,
     handle: product.handle,
     title: product.title,
+    sourceTitle: product.title,
     description: product.description,
     descriptionHtml: product.descriptionHtml,
     shortDescription: product.description.split(".")[0],
@@ -253,17 +232,24 @@ export function mapShopifyProduct(product: ShopifyProduct): Product {
     topNotes,
     heartNotes,
     baseNotes,
-    mood: getMetafieldValue(metafields, "mood") ?? getTagValue(tags, "mood") ?? "Balanced",
+    mood: getMetafieldValue(metafields, "mood") ?? getTagValue(tags, "mood") ?? "",
     occasion:
       getMetafieldValue(metafields, "occasion") ??
       getTagValue(tags, "occasion") ??
-      "Everyday",
-    fragranceStrength:
-      getMetafieldValue(metafields, "fragrance_strength") ?? "Moderate",
+      "",
+    fragranceStrength: getMetafieldValue(metafields, "fragrance_strength") ?? "",
     featuredMessage: getMetafieldValue(metafields, "featured_message"),
     featured: tags.some((tag) => tag.toLowerCase().includes("featured")),
     isNew: tags.some((tag) => tag.toLowerCase().includes("new")),
   };
+
+  const merged = mergeScentMetadataFromLocal(product.handle, mapped);
+
+  if (!merged.featuredImage?.url && merged.localImagePath) {
+    merged.featuredImage = { url: merged.localImagePath, altText: merged.title };
+  }
+
+  return merged;
 }
 
 export function mapShopifyCollection(

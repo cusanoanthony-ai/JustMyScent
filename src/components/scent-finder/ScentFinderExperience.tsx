@@ -49,11 +49,11 @@ export function ScentFinderExperience({ products }: { products: Product[] }) {
 
     const key = question.id as keyof Pick<
       ScentFinderAnswers,
-      "scentFamilies" | "moods" | "occasions" | "notes"
+      "scentFamilies" | "moods" | "occasions" | "notes" | "avoidNotes" | "season"
     >;
 
     setAnswers((current) => {
-      const existing = current[key];
+      const existing = current[key] ?? [];
       const next = existing.includes(value)
         ? existing.filter((item) => item !== value)
         : [...existing, value];
@@ -90,9 +90,10 @@ export function ScentFinderExperience({ products }: { products: Product[] }) {
                   ? answers.audience === option.value
                   : question.id === "strength"
                     ? answers.strength === option.value
-                    : answers[question.id as "scentFamilies" | "moods" | "occasions" | "notes"].includes(
-                        option.value,
-                      );
+                    : (
+                        answers[question.id as "scentFamilies" | "moods" | "occasions" | "notes" | "avoidNotes" | "season"] ??
+                        []
+                      ).includes(option.value);
 
               return (
                 <button
@@ -156,9 +157,14 @@ export function ScentFinderExperience({ products }: { products: Product[] }) {
                 </div>
                 <div className="p-5">
                   <p className="text-xs tracking-[0.16em] text-champagne uppercase">
-                    {item.matchPercent}% match
+                    {item.confidenceLabel} · {item.matchPercent}% alignment
                   </p>
                   <h3 className="mt-2 font-display text-2xl text-espresso">{item.product.title}</h3>
+                  <p className="mt-1 text-xs text-espresso/55">
+                    {item.metadataCoverage === "complete"
+                      ? "Recommendation uses verified scent metadata"
+                      : "Recommendation uses limited verified metadata"}
+                  </p>
                   <p className="mt-1 text-sm text-espresso/65">
                     {item.product.scentFamily} ·{" "}
                     {[...item.product.topNotes, ...item.product.heartNotes]
@@ -174,6 +180,11 @@ export function ScentFinderExperience({ products }: { products: Product[] }) {
                   <ul className="mt-3 space-y-1 text-sm text-espresso/70">
                     {item.reasons.map((reason) => (
                       <li key={reason}>• {reason}</li>
+                    ))}
+                    {item.mismatches.map((mismatch) => (
+                      <li key={mismatch} className="text-espresso/55">
+                        • Note: {mismatch}
+                      </li>
                     ))}
                   </ul>
                   <div className="mt-5 flex flex-wrap gap-3">

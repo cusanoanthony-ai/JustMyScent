@@ -27,6 +27,14 @@ export function isShopifyModeEnabled(): boolean {
   );
 }
 
-export function getCommerceMode(): "shopify" | "demo" {
-  return isShopifyModeEnabled() ? "shopify" : "demo";
+export function getShopifyWebhookSecret(): string | undefined {
+  return process.env.SHOPIFY_WEBHOOK_SECRET?.trim() || undefined;
+}
+
+export function isShopifyWebhookEnabled(): boolean {
+  return Boolean(getShopifyWebhookSecret());
+}
+
+export function getCommerceMode(): "shopify" | "snapshot" {
+  return isShopifyModeEnabled() ? "shopify" : "snapshot";
 }

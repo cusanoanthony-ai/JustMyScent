@@ -19,11 +19,11 @@ export function ProductVisual({
   className = "",
   priority = false,
 }: {
-  product: Pick<Product, "title" | "featuredImage" | "demoVisual">;
+  product: Pick<Product, "title" | "featuredImage" | "demoVisual" | "localImagePath">;
   className?: string;
   priority?: boolean;
 }) {
-  const image = product.featuredImage;
+  const image = product.featuredImage ?? (product.localImagePath ? { url: product.localImagePath, altText: product.title } : undefined);
 
   if (image?.url) {
     return (

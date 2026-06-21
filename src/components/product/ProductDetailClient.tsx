@@ -1,10 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { ProductVisual } from "@/components/product/ProductVisual";
 import type { Product } from "@/lib/commerce/types";
 import { formatMoney, formatPriceRange } from "@/lib/formatters";
+
+function NoteList({ label, notes }: { label: string; notes: string[] }) {
+  return (
+    <div className="flex gap-2">
+      <dt className="font-semibold">{label}</dt>
+      <dd>{notes.length ? notes.join(", ") : "Not verified on the public product page."}</dd>
+    </div>
+  );
+}
 
 export function ProductDetailClient({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -17,6 +27,9 @@ export function ProductDetailClient({ product }: { product: Product }) {
     () => product.variants.find((variant) => variant.id === selectedVariantId),
     [product.variants, selectedVariantId],
   );
+
+  const hasVerifiedNotes =
+    product.topNotes.length + product.heartNotes.length + product.baseNotes.length > 0;
 
   const handleAddToCart = () => {
     if (!selectedVariant?.availableForSale) {
@@ -48,6 +61,16 @@ export function ProductDetailClient({ product }: { product: Product }) {
         <h1 className="mt-2 font-display text-4xl font-semibold text-espresso sm:text-5xl">
           {product.title}
         </h1>
+        {product.sourceTitle && product.sourceTitle !== product.title ? (
+          <p className="mt-2 text-sm text-espresso/55">Source listing: {product.sourceTitle}</p>
+        ) : null}
+        {product.referenceFragrance ? (
+          <p className="mt-3 rounded-sm border border-espresso/10 bg-[#faf6f0] px-4 py-3 text-sm leading-relaxed text-espresso/75">
+            Inspired by the fragrance profile of {product.referenceFragrance}
+            {product.referenceBrand ? ` by ${product.referenceBrand}` : ""}. Just My Scent is not
+            affiliated with the referenced brand or designer.
+          </p>
+        ) : null}
         <p className="mt-4 text-base leading-relaxed text-espresso/70">{product.shortDescription}</p>
 
         <div className="mt-6">
@@ -121,34 +144,52 @@ export function ProductDetailClient({ product }: { product: Product }) {
           </p>
         ) : null}
 
+        <div className="mt-6">
+          <Link
+            href="/scent-finder"
+            className="text-xs font-semibold tracking-[0.14em] text-espresso uppercase underline-offset-4 hover:underline"
+          >
+            Find similar scents with Scent Finder
+          </Link>
+        </div>
+
         <div className="mt-10 space-y-6 border-t border-espresso/10 pt-8 text-sm leading-relaxed text-espresso/75">
           <div>
             <h2 className="font-display text-xl text-espresso">Fragrance profile</h2>
+            {!hasVerifiedNotes ? (
+              <p className="mt-3 text-espresso/65">
+                Verified note details are limited for this product. Browse the description below or
+                use Scent Finder for products with fuller metadata.
+              </p>
+            ) : null}
             <dl className="mt-3 grid gap-2">
-              <div className="flex gap-2">
-                <dt className="font-semibold">Top notes:</dt>
-                <dd>{product.topNotes.join(", ")}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="font-semibold">Heart notes:</dt>
-                <dd>{product.heartNotes.join(", ")}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="font-semibold">Base notes:</dt>
-                <dd>{product.baseNotes.join(", ")}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="font-semibold">Mood:</dt>
-                <dd>{product.mood}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="font-semibold">Occasion:</dt>
-                <dd>{product.occasion}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="font-semibold">Strength:</dt>
-                <dd>{product.fragranceStrength}</dd>
-              </div>
+              {product.scentFamily ? (
+                <div className="flex gap-2">
+                  <dt className="font-semibold">Scent family:</dt>
+                  <dd>{product.scentFamilyRaw ?? product.scentFamily}</dd>
+                </div>
+              ) : null}
+              <NoteList label="Top notes:" notes={product.topNotes} />
+              <NoteList label="Heart notes:" notes={product.heartNotes} />
+              <NoteList label="Base notes:" notes={product.baseNotes} />
+              {product.mood ? (
+                <div className="flex gap-2">
+                  <dt className="font-semibold">Mood:</dt>
+                  <dd>{product.mood}</dd>
+                </div>
+              ) : null}
+              {product.occasion ? (
+                <div className="flex gap-2">
+                  <dt className="font-semibold">Occasion:</dt>
+                  <dd>{product.occasion}</dd>
+                </div>
+              ) : null}
+              {product.fragranceStrength ? (
+                <div className="flex gap-2">
+                  <dt className="font-semibold">Strength:</dt>
+                  <dd>{product.fragranceStrength}</dd>
+                </div>
+              ) : null}
             </dl>
           </div>
           <details className="border border-espresso/10 p-4">
@@ -162,13 +203,18 @@ export function ProductDetailClient({ product }: { product: Product }) {
               }}
             />
           </details>
+          <p className="text-xs leading-relaxed text-espresso/55">
+            Product names referencing designer or brand fragrances are used descriptively to indicate
+            scent inspiration only. Just My Scent products are independent interpretations and are not
+            endorsed by or affiliated with the referenced brands.
+          </p>
           <details className="border border-espresso/10 p-4">
             <summary className="cursor-pointer font-semibold text-espresso">
               Shipping & returns
             </summary>
             <p className="mt-4">
-              Demonstration copy only. Final shipping and return policies must be approved by
-              the business owner before launch.
+              Demonstration copy only. Final shipping and return policies must be approved by the
+              business owner before launch.
             </p>
           </details>
         </div>

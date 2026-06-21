@@ -6,9 +6,9 @@ import {
 } from "@/lib/env";
 
 describe("environment mode detection", () => {
-  it("defaults to demo mode without live-data env vars", () => {
+  it("defaults to snapshot mode without live-data env vars", () => {
     expect(isShopifyLiveDataRequested()).toBe(false);
     expect(isShopifyModeEnabled()).toBe(false);
-    expect(getCommerceMode()).toBe("demo");
+    expect(getCommerceMode()).toBe("snapshot");
   });
 });

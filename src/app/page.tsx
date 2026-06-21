@@ -7,6 +7,8 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCommerceProvider } from "@/lib/commerce";
 
+export const revalidate = 60;
+
 const benefits = [
   "Concentrated fragrance oils",
   "Alcohol-free formula",
@@ -17,19 +19,10 @@ const benefits = [
 export default async function HomePage() {
   const provider = getCommerceProvider();
   const collections = await provider.getCollections();
-  const scentFamilyCollections = collections.filter((collection) =>
-    [
-      "sweet-gourmand",
-      "fresh-clean",
-      "floral",
-      "warm-sensual",
-      "woody-earthy",
-      "bold-refined",
-    ].includes(collection.handle),
-  );
   const audienceCollections = collections.filter((collection) =>
-    ["women", "men", "unisex"].includes(collection.handle),
+    ["womens-fragrance", "mens-fragrance", "frontpage"].includes(collection.handle),
   );
+  const featuredCollection = collections.find((collection) => collection.handle === "best-sellers");
   const featured = await provider.getFeaturedProducts(6);
   const spotlight = featured[0] ?? (await provider.getProducts({ first: 1 })).products[0];
 
@@ -52,34 +45,29 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="py-14 sm:py-20">
-        <Container>
-          <SectionHeading
-            eyebrow="Shop by scent family"
-            title="Start with the mood you want to wear"
-            description="Explore editorial groupings designed for intuitive discovery."
-          />
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {scentFamilyCollections.map((collection) => (
-              <Link
-                key={collection.id}
-                href={`/collections/${collection.handle}`}
-                className="border border-espresso/10 p-6 transition-colors hover:border-champagne focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne"
-              >
-                <h3 className="font-display text-2xl text-espresso">{collection.title}</h3>
-                <p className="mt-2 text-sm text-espresso/65">{collection.description}</p>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
+      {featuredCollection ? (
+        <section className="py-14 sm:py-20">
+          <Container>
+            <SectionHeading
+              eyebrow="Public collection"
+              title={featuredCollection.title}
+              description={featuredCollection.description}
+            />
+            <div className="mt-8">
+              <Button href={`/collections/${featuredCollection.handle}`} variant="secondary">
+                Shop Best Sellers
+              </Button>
+            </div>
+          </Container>
+        </section>
+      ) : null}
 
       <section className="border-y border-espresso/10 bg-[#faf6f0] py-14 sm:py-20">
         <Container>
           <SectionHeading
             eyebrow="Featured"
             title="Best-loved starting points"
-            description="Curated oils to explore when you are building your scent wardrobe."
+            description="Products from the publicly listed best-sellers collection on justmyscent.online."
           />
           <div className="mt-10">
             <ProductGrid products={featured} />
@@ -207,7 +195,7 @@ export default async function HomePage() {
               },
               {
                 q: "Can I use the Scent Finder?",
-                a: "Yes. It recommends products based on your preferences and works in both demo and live Shopify modes.",
+                a: "Yes. It recommends products with verified scent metadata and works in both snapshot and live Shopify modes.",
               },
             ].map((item) => (
               <article key={item.q} className="border border-espresso/10 bg-ivory p-5">

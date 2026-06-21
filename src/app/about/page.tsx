@@ -18,7 +18,7 @@ export default function AboutPage() {
         <p>
           The project demonstrates how a premium-feeling ecommerce presentation can remain
           accessible: clear product storytelling, guided recommendations, and a catalog that
-          works equally well in demo mode and with live Shopify data.
+          works equally well in public snapshot mode and with live Shopify data.
         </p>
         <p>
           No claims are made here about the real company, its history, manufacturing, sourcing,

@@ -44,7 +44,7 @@ describe("shopify product mapper", () => {
     });
 
     expect(product.audience).toBe("unisex");
-    expect(product.scentFamily).toBe("Warm & Sensual");
+    expect(product.scentFamily).toBe("warm");
     expect(product.topNotes).toEqual(["Vanilla", "Amber"]);
     expect(product.heartNotes).toEqual(["Orchid"]);
     expect(product.mood).toBe("romantic");

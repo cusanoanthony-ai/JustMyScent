@@ -2,26 +2,35 @@ import type { Product } from "@/lib/commerce/types";
 
 export interface ScentFinderAnswers {
   scentFamilies: string[];
+  notes: string[];
+  avoidNotes: string[];
   moods: string[];
   occasions: string[];
-  notes: string[];
   audience: "women" | "men" | "unisex" | "any";
   strength: "light" | "moderate" | "bold";
+  season?: string[];
 }
+
+export type MatchConfidenceLabel = "Strong match" | "Good match" | "Worth exploring";
 
 export interface ScentFinderRecommendation {
   product: Product;
   score: number;
+  normalizedScore: number;
   matchPercent: number;
+  confidenceLabel: MatchConfidenceLabel;
+  metadataCoverage: "complete" | "limited" | "missing";
   reasons: string[];
+  mismatches: string[];
 }
 
 export interface ScentFinderQuestion {
-  id: keyof ScentFinderAnswers | "strength";
+  id: keyof ScentFinderAnswers;
   title: string;
   subtitle?: string;
   options: Array<{ value: string; label: string }>;
   multi?: boolean;
+  optional?: boolean;
 }
 
 export const SCENT_FINDER_QUESTIONS: ScentFinderQuestion[] = [
@@ -31,12 +40,42 @@ export const SCENT_FINDER_QUESTIONS: ScentFinderQuestion[] = [
     subtitle: "Choose one or more.",
     multi: true,
     options: [
-      { value: "Sweet & Gourmand", label: "Sweet & Gourmand" },
-      { value: "Fresh & Clean", label: "Fresh & Clean" },
+      { value: "Oriental Vanilla", label: "Oriental Vanilla" },
       { value: "Floral", label: "Floral" },
-      { value: "Warm & Sensual", label: "Warm & Sensual" },
-      { value: "Woody & Earthy", label: "Woody & Earthy" },
-      { value: "Bold & Refined", label: "Bold & Refined" },
+      { value: "Fresh", label: "Fresh" },
+      { value: "Woody", label: "Woody" },
+      { value: "Gourmand", label: "Gourmand" },
+      { value: "Aromatic", label: "Aromatic" },
+      { value: "Chypre", label: "Chypre" },
+      { value: "Aquatic", label: "Aquatic" },
+    ],
+  },
+  {
+    id: "notes",
+    title: "Which notes do you enjoy?",
+    multi: true,
+    options: [
+      { value: "vanilla", label: "Vanilla" },
+      { value: "rose", label: "Rose" },
+      { value: "jasmine", label: "Jasmine" },
+      { value: "bergamot", label: "Bergamot" },
+      { value: "amber", label: "Amber" },
+      { value: "cedar", label: "Cedar" },
+      { value: "musk", label: "Musk" },
+      { value: "patchouli", label: "Patchouli" },
+    ],
+  },
+  {
+    id: "avoidNotes",
+    title: "Are there notes you prefer to avoid?",
+    multi: true,
+    options: [
+      { value: "musk", label: "Musk" },
+      { value: "patchouli", label: "Patchouli" },
+      { value: "vanilla", label: "Vanilla" },
+      { value: "rose", label: "Rose" },
+      { value: "oud", label: "Oud" },
+      { value: "leather", label: "Leather" },
     ],
   },
   {
@@ -46,15 +85,15 @@ export const SCENT_FINDER_QUESTIONS: ScentFinderQuestion[] = [
     options: [
       { value: "Romantic", label: "Romantic" },
       { value: "Fresh", label: "Fresh" },
-      { value: "Comforting", label: "Comforting" },
       { value: "Confident", label: "Confident" },
-      { value: "Serene", label: "Serene" },
-      { value: "Magnetic", label: "Magnetic" },
+      { value: "Soft", label: "Soft" },
+      { value: "Warm", label: "Warm" },
+      { value: "Clean", label: "Clean" },
     ],
   },
   {
     id: "occasions",
-    title: "When will you wear it?",
+    title: "When are you most likely to wear it?",
     multi: true,
     options: [
       { value: "Everyday", label: "Everyday" },
@@ -63,21 +102,6 @@ export const SCENT_FINDER_QUESTIONS: ScentFinderQuestion[] = [
       { value: "Office", label: "Office" },
       { value: "Date Night", label: "Date Night" },
       { value: "Weekend", label: "Weekend" },
-    ],
-  },
-  {
-    id: "notes",
-    title: "Which notes do you enjoy?",
-    multi: true,
-    options: [
-      { value: "Vanilla", label: "Vanilla" },
-      { value: "Rose", label: "Rose" },
-      { value: "Bergamot", label: "Bergamot" },
-      { value: "Amber", label: "Amber" },
-      { value: "Cedar", label: "Cedar" },
-      { value: "Jasmine", label: "Jasmine" },
-      { value: "Tonka", label: "Tonka" },
-      { value: "Vetiver", label: "Vetiver" },
     ],
   },
   {
@@ -92,20 +116,42 @@ export const SCENT_FINDER_QUESTIONS: ScentFinderQuestion[] = [
   },
   {
     id: "strength",
-    title: "How noticeable do you want the scent to feel?",
+    title: "How noticeable do you want it to feel?",
     options: [
       { value: "light", label: "Light" },
       { value: "moderate", label: "Moderate" },
       { value: "bold", label: "Bold" },
     ],
   },
+  {
+    id: "season",
+    title: "Optional seasonal preference",
+    subtitle: "Skip if you have no preference.",
+    multi: true,
+    optional: true,
+    options: [
+      { value: "Spring", label: "Spring" },
+      { value: "Summer", label: "Summer" },
+      { value: "Fall", label: "Fall" },
+      { value: "Winter", label: "Winter" },
+    ],
+  },
 ];
 
 export const DEFAULT_SCENT_FINDER_ANSWERS: ScentFinderAnswers = {
   scentFamilies: [],
+  notes: [],
+  avoidNotes: [],
   moods: [],
   occasions: [],
-  notes: [],
   audience: "any",
   strength: "moderate",
+  season: [],
 };
+
+export function isQuizEligible(product: Product): boolean {
+  if (product.quizEligible === false) return false;
+  const noteCount =
+    product.topNotes.length + product.heartNotes.length + product.baseNotes.length;
+  return Boolean(product.scentFamily || product.scentFamilyRaw) && noteCount >= 2;
+}

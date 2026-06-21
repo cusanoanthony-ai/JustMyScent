@@ -5,6 +5,8 @@ import { Container } from "@/components/ui/Container";
 import { getCommerceProvider } from "@/lib/commerce";
 import { buildCollectionMetadata, buildBreadcrumbJsonLd } from "@/lib/seo";
 
+export const revalidate = 60;
+
 export async function generateMetadata({
   params,
 }: {

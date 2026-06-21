@@ -3,6 +3,8 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCommerceProvider } from "@/lib/commerce";
 
+export const revalidate = 60;
+
 export default async function CollectionsPage() {
   const provider = getCommerceProvider();
   const collections = await provider.getCollections();

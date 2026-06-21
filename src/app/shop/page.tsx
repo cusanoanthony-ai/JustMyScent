@@ -6,6 +6,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCommerceProvider } from "@/lib/commerce";
 import { parseShopSearchParams, type ShopSearchParams } from "@/lib/shop/filters";
 
+export const revalidate = 60;
+
 export default async function ShopPage({
   searchParams,
 }: {

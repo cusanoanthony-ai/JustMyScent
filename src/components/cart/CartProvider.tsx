@@ -31,7 +31,7 @@ interface CartContextValue {
   cart: Cart;
   isOpen: boolean;
   isLoading: boolean;
-  mode: "demo" | "shopify";
+  mode: "snapshot" | "shopify";
   openCart: () => void;
   closeCart: () => void;
   addItem: (input: CartLineInput) => Promise<CommerceResult<Cart>>;
@@ -67,7 +67,7 @@ function writeDemoCart(cart: Cart) {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<Cart>(emptyCart);
   const [isOpen, setIsOpen] = useState(false);
-  const [mode, setMode] = useState<"demo" | "shopify">("demo");
+  const [mode, setMode] = useState<"snapshot" | "shopify">("snapshot");
   const [isLoading, setIsLoading] = useState(true);
   const [, startTransition] = useTransition();
 
@@ -167,7 +167,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     return {
       error:
-        "Demo checkout is disabled. Connect Shopify credentials to enable hosted checkout.",
+        "Snapshot checkout is disabled. Connect Shopify credentials to enable hosted checkout.",
     };
   }, [mode]);
 

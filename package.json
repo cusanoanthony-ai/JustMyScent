@@ -9,7 +9,11 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:catalog": "node scripts/build-public-catalog.mjs",
+    "verify:shopify": "node scripts/verify-shopify-connection.mjs",
+    "audit:shopify-parity": "node scripts/audit-shopify-catalog-parity.mjs",
+    "sync:scent-metafields": "node scripts/sync-scent-metafields.mjs"
   },
   "dependencies": {
     "@shopify/storefront-api-client": "^1.0.9",
